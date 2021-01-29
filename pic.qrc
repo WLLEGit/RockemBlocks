@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pic/background.png</file>
+        <file>pic/Gem/Blue.gif</file>
+        <file>pic/Gem/crystalball.gif</file>
+        <file>pic/Gem/Gold.gif</file>
+        <file>pic/Gem/Green.gif</file>
+        <file>pic/Gem/Magic.gif</file>
+        <file>pic/Gem/orange.gif</file>
+        <file>pic/Gem/Red.gif</file>
+        <file>pic/Gem/Silver.gif</file>
+        <file>pic/Gem/violet.gif</file>
+        <file>pic/Menu/record.png</file>
+        <file>pic/Menu/settings.png</file>
+        <file>pic/Menu/start.png</file>
+        <file>pic/Menu/record_hover.png</file>
+        <file>pic/Menu/setting_hover.png</file>
+        <file>pic/Menu/start_hover.png</file>
+        <file>pic/Menu/exit.png</file>
+        <file>pic/Menu/exit_hover.png</file>
+        <file>pic/Gem/crystalball.png</file>
+    </qresource>
+</RCC>
