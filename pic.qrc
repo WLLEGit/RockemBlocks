@@ -19,5 +19,24 @@
         <file>pic/Menu/exit.png</file>
         <file>pic/Menu/exit_hover.png</file>
         <file>pic/Gem/crystalball.png</file>
+        <file>pic/InGame/background.jpg</file>
+        <file>pic/InGame/background2.jpg</file>
+        <file>pic/InGame/background3.jpg</file>
+        <file>pic/InGame/bottom frame.png</file>
+        <file>pic/InGame/bottom widget classic.png</file>
+        <file>pic/InGame/menu.png</file>
+        <file>pic/InGame/menu_hover.png</file>
+        <file>pic/InGame/reset.png</file>
+        <file>pic/InGame/reset_hover.png</file>
+        <file>pic/InGame/score.png</file>
+        <file>pic/InGame/top frame.png</file>
+        <file>pic/Gem/Gold.png</file>
+        <file>pic/Gem/Green.png</file>
+        <file>pic/Gem/Magic.png</file>
+        <file>pic/Gem/orange.png</file>
+        <file>pic/Gem/Red.png</file>
+        <file>pic/Gem/Silver.png</file>
+        <file>pic/Gem/violet.png</file>
+        <file>pic/Gem/Blue.png</file>
     </qresource>
 </RCC>

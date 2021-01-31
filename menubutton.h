@@ -1,6 +1,7 @@
 #ifndef MENUBUTTON_H
 #define MENUBUTTON_H
 
+#include "hoverbutton.h"
 #include <QWidget>
 #include <QPushButton>
 #include <QLabel>
@@ -12,6 +13,9 @@ class MenuButton : public QLabel
     Q_OBJECT
 public:
     explicit MenuButton(int r, int x, int y, int width, int height, QString path, QString path2, QWidget *parent = nullptr);
+
+    void setSound(QString pathHover, QString pathLeave, QString pathPress, QString pathRelease);
+
     void show();
     void setVisible(bool);
     int x(){return pushLabel->x();}
@@ -21,7 +25,7 @@ public:
 
 private:
     QLabel* pushLabel = new QLabel;
-    QPushButton *textButton = new QPushButton;
+    HoverButton *textButton = new HoverButton;
     QMovie *buttonGif = new QMovie(":/pic/Gem/crystalball.gif");
     QPropertyAnimation* animation = new QPropertyAnimation;
 signals:
@@ -29,3 +33,4 @@ signals:
 };
 
 #endif // MENUBUTTON_H
+

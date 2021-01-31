@@ -13,10 +13,9 @@ MenuButton::MenuButton(int r, int x, int y, int width, int height, QString path,
     buttonGif->start();
 
     textButton->setGeometry(x - r, y - r, 2*r, 2*r);
-    textButton->setFlat(true);
-    textButton->setStyleSheet(QString("QPushButton:!hover{border-image:url(%1);}").arg(path)  + \
-                              QString("QPushButton:hover{border-image:url(%1);}").arg(path2));
-
+    textButton->setStyleSheet("QPushButton{border:0px;}");
+    textButton->setImage(path, path2, 2*r, 2*r);
+    setSound(":/sound/button_mouseover.wav", ":/sound/button_mouseleave.wav", ":/sound/button_press.wav", ":/sound/button_release.wav"); //默认音效
 
     animation->setParent(parent);
     animation->setTargetObject(pushLabel);
@@ -43,4 +42,8 @@ void MenuButton::setVisible(bool flag){
     pushLabel->setVisible(flag);
     textButton->setVisible(flag);
     QLabel::setVisible(flag);
+}
+
+void MenuButton::setSound(QString pathHover, QString pathLeave, QString pathPress, QString pathRelease){
+    textButton->setSound(pathHover, pathLeave, pathPress, pathRelease);
 }

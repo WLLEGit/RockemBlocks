@@ -2,15 +2,31 @@
 #define GEM_H
 
 #include <QWidget>
+#include <QMap>
+#include <QPushButton>
+#include <QPixmap>
 
-class Gem : public QWidget
+class Gem : public QPushButton
 {
     Q_OBJECT
 public:
-    explicit Gem(QWidget *parent = nullptr);
+    explicit Gem(int _type, int len, int _x, int _y, QWidget *parent = nullptr, int offset=0);
+
+    int x(){return _x;}
+    int y(){return _y;}
+    void setY(int n){_y=n;}
+    int type(){return _type;}
+    void bomb();
+
+private:
+    QMap<int, QString> gemPath;
+    void initGemPath();
+    int _type;
+    int _x, _y;
+    QWidget* parent;
 
 signals:
-
+    void mouseClicked(Gem*);
 };
 
 #endif // GEM_H

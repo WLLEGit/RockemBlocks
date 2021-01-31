@@ -17,12 +17,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     gamewidget.cpp \
+    gem.cpp \
+    hoverbutton.cpp \
     main.cpp \
     menubutton.cpp \
     startwidget.cpp
 
 HEADERS += \
     gamewidget.h \
+    gem.h \
+    hoverbutton.h \
     menubutton.h \
     startwidget.h
 
@@ -40,4 +44,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     music.qrc \
-    pic.qrc
+    pic.qrc \
+    sound.qrc

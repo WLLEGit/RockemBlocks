@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QPushButton>
+#include "hoverbutton.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class StartWidget; }
@@ -21,7 +22,7 @@ public:
     GameWidget* gameWidget;
     //按钮
     MenuButton* startButton, *recordButton, *settingButton;
-    QPushButton* exitButton;
+    HoverButton* exitButton;
     //音效
     QMediaPlayer* bgLoading, *bgMainmenu;
     bool is_end = false;

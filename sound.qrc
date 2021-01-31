@@ -1,2 +1,31 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/">
+        <file>sound/badmove.wav</file>
+        <file>sound/button_mouseleave.wav</file>
+        <file>sound/button_mouseover.wav</file>
+        <file>sound/button_press.wav</file>
+        <file>sound/button_release.wav</file>
+        <file>sound/combo_1.wav</file>
+        <file>sound/combo_2.wav</file>
+        <file>sound/combo_3.wav</file>
+        <file>sound/combo_4.wav</file>
+        <file>sound/combo_5.wav</file>
+        <file>sound/combo_6.wav</file>
+        <file>sound/combo_7.wav</file>
+        <file>sound/gem_countdown_destroyed.ogg</file>
+        <file>sound/gem_hit.wav</file>
+        <file>sound/gem_shatters.wav</file>
+        <file>sound/secretmouseover4.wav</file>
+        <file>sound/select.wav</file>
+        <file>sound/tick.wav</file>
+        <file>sound/voice_awesome.wav</file>
+        <file>sound/voice_excellent.wav</file>
+        <file>sound/voice_go.wav</file>
+        <file>sound/voice_good.wav</file>
+        <file>sound/voice_welcomeback.wav</file>
+        <file>sound/zen_menuclose.wav</file>
+        <file>sound/zen_menuexpand.wav</file>
+        <file>sound/zen_menuopen.wav</file>
+        <file>sound/zen_menushrink.wav</file>
+    </qresource>
+</RCC>

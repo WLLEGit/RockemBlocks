@@ -7,7 +7,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <QFileInfo>
-#include <Qtime>
+#include <QTime>
 
 StartWidget::StartWidget(QWidget *parent)
     : QWidget(parent)
@@ -16,7 +16,8 @@ StartWidget::StartWidget(QWidget *parent)
     ui->setupUi(this);
 
     setFixedSize(1024, 768);
-    gameWidget = new GameWidget(this);
+    setWindowTitle("Rockem Blocks");
+    gameWidget = new GameWidget(parent);
     bgLoading= new QMediaPlayer(this);
     bgMainmenu = new QMediaPlayer(this);
 
@@ -39,7 +40,6 @@ StartWidget::StartWidget(QWidget *parent)
     QTimer::singleShot(1000, this, [=](){
         ShowButton();
     });
-
 
 }
 
@@ -68,16 +68,18 @@ void StartWidget::ShowBackground(){
 void StartWidget::ShowButton(){
     startButton = new MenuButton(this->width()/10, this->width()/2, this->height()/2, this->width(), this->height(),\
                                  ":/pic/Menu/start.png", ":/pic/Menu/start_hover.png", this);
-    recordButton = new MenuButton(this->width()/100*7, this->width()/5, this->height()/2, this->width(), this->height(),\
+    recordButton = new MenuButton(this->width()/100*7, this->width()/6, this->height()/2, this->width(), this->height(),\
                                   ":/pic/Menu/record.png", ":/pic/Menu/record_hover.png", this);
-    settingButton = new MenuButton(this->width()/100*7, this->width()/5*4, this->height()/2, this->width(), this->height(),\
+    settingButton = new MenuButton(this->width()/100*7, this->width()/6*5, this->height()/2, this->width(), this->height(),\
                                    ":/pic/Menu/settings.png", ":/pic/Menu/setting_hover.png", this);
 
-    exitButton = new QPushButton(this);
+
+    exitButton = new HoverButton(this);
     exitButton->setGeometry(this->width()-70, this->height()-35, 60, 30);
     exitButton->setFlat(true);
-    exitButton->setStyleSheet(QString("QPushButton:!hover{border-image:url(:/pic/Menu/exit.png);}") + \
-                              QString("QPushButton:hover{border-image:url(:/pic/Menu/exit_hover.png);}"));
+    exitButton->setImage(":/pic/Menu/exit.png", ":/pic/Menu/exit_hover.png", 60, 30);
+    exitButton->setSound(":/sound/button_mouseover.wav", ":/sound/button_mouseleave.wav", ":/sound/button_press.wav", ":/sound/button_release.wav");
+
 
     //显示按钮
     startButton->show();
@@ -88,19 +90,24 @@ void StartWidget::ShowButton(){
     });
     //链接按钮功能
     connect(exitButton, &QPushButton::clicked,[=](){
-        QApplication::exit();
+        QTimer::singleShot(250, this, [=](){
+            QApplication::exit();
+        });
     });
     connect(startButton, &MenuButton::clicked, [=](){
+        gameWidget->setGeometry(this->geometry());
+        TransitionAnimation();
         is_end = true;
         bgLoading->stop();
         bgMainmenu->stop();
         gameWidget->bgGame->play();
-
-        gameWidget->setGeometry(this->x(), this->y(), this->width(), this->height());
-        TransitionAnimation();
         this->hide();
         setWindowOpacity(1);
         gameWidget->show();
+        QTimer::singleShot(500, this, [=](){
+            gameWidget->start();
+        });
+
     }) ;
     connect(settingButton, &MenuButton::clicked, [=](){
 
@@ -121,8 +128,6 @@ void StartWidget::TransitionAnimation(){
     label->setVisible(true);
     QPropertyAnimation animation(label, "geometry", this);
     animation.setDuration(2000);
-    qDebug() << -this->width()/5 << -this->height()/5<< this->width()/5*7<< this->height()/5*7;
-    qDebug() << startButton->x() << startButton->y()<< startButton->width()<< startButton->height();
     label->setGeometry(startButton->x(), startButton->y(), startButton->width(), startButton->height());
     label->setStyleSheet(QString("QLabel{border-image:url(:/pic/Gem/crystalball.png);}"));
     animation.setStartValue(QRect(startButton->x(), startButton->y(), startButton->width(), startButton->height()));
