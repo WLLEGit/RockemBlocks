@@ -12,6 +12,7 @@
 #include <QTimer>
 #include <QSound>
 #include <vector>
+#include <QEvent>
 
 constexpr int SCORE_PER_GEM = 5;        //每颗宝石分数
 constexpr int DIFFICULITY = 5;          //宝石种类数
@@ -21,6 +22,7 @@ constexpr int BONUS_PRE_STRAIGHT = 5;   //每一条直边加分（L型，T型，
 
 
 struct BombInfo{
+    int cnt;
     bool is_straight;
     int num_straight;
 };
@@ -43,6 +45,9 @@ public:
     bool is_end= false;
     void start();
 
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 private:
     Ui::GameWidget *ui;
     HoverButton* menuButton, *resetButton;
@@ -55,7 +60,7 @@ private:
     unsigned int gemBoard[10][10];          //第一个值为x，第二个值为y
     int fallBoard[10][10];
     Gem* gems[10][10];
-    QSound* soundGo, *soundGood, *soundExcellent, *soundAwesome, *soundBadmove;
+    QSound* soundGo, *soundGood, *soundExcellent, *soundAwesome, *soundBadmove, *soundAct, *soundFall, *soundGenerate;
     bool is_acting=false;
     std::vector<Gem*> toBomb;
 
@@ -77,7 +82,6 @@ private:
 
     void showMenu();
     void reset();
-    bool event(QEvent *event) override;
 
 };
 

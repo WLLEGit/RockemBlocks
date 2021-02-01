@@ -38,5 +38,6 @@
         <file>pic/Gem/Silver.png</file>
         <file>pic/Gem/violet.png</file>
         <file>pic/Gem/Blue.png</file>
+        <file>pic/InGame/reset_disabled.png</file>
     </qresource>
 </RCC>

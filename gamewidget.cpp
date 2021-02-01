@@ -24,6 +24,8 @@ GameWidget::GameWidget(QWidget *parent) :
     initWidgets();
     initScene();
     initSound();
+
+    connect(resetButton, &QPushButton::clicked, this, &GameWidget::reset);
 }
 
 
@@ -130,6 +132,9 @@ void GameWidget::initSound(){
     soundExcellent = new QSound(":/sound/voice_excellent.wav", this);
     soundAwesome = new QSound(":/sound/voice_awesome.wav", this);
     soundBadmove = new QSound(":/sound/badmove.wav", this);
+    soundAct = new QSound(":/sound/combo_2.wav");
+    soundFall = new QSound(":/sound/gem_hit.wav");
+    soundGenerate = new QSound(":/sound/gem_hit.wav");
 }
 
 int GameWidget::randomGem(){
@@ -138,12 +143,14 @@ int GameWidget::randomGem(){
 
 void GameWidget::initScene(){
     boardWidget = new QWidget(this);
+    boardWidget->show();
     boardWidget->setGeometry(1024/20*7, (768- 10*len)/2, 10*len, 10*len);
     QRandomGenerator::global()->fillRange(gemBoard[0], 100);
     for(int i = 0; i < 10; ++i)
         for(int j = 0; j < 10; ++j){
             gemBoard[i][j] = gemBoard[i][j] % DIFFICULITY + 1;
             gems[i][j] = new Gem(gemBoard[i][j], len, i, j, boardWidget);
+            gems[i][j]->installEventFilter(this);
             connect(gems[i][j], &Gem::mouseClicked, this, &GameWidget::act);
         }
 }
@@ -159,16 +166,36 @@ void GameWidget::act(Gem* gem){
     is_acting = true;
 
     toBomb.clear();
-    int cntStraight=gemBomb(gem, gem->type()).num_straight;
+    BombInfo bombInfo=gemBomb(gem, gem->type());
+    int cntStraight = bombInfo.num_straight;
 
-    if(toBomb.size() < 3){
+    Q_ASSERT(bombInfo.cnt == (int)toBomb.size());
+    if(bombInfo.cnt < 3){
+        QTimer::singleShot(290, this, [=](){
+            is_acting=false;
+        });
         toBomb.clear();
         badMove(gem);
         return;
     }
-    score += toBomb.size() * SCORE_PER_GEM;
-    if(cntStraight)
+
+    soundAct->play();
+
+    score += bombInfo.cnt * SCORE_PER_GEM;
+    if(cntStraight >= 2)
         score += (BONUS_HAVE_STRAIGHT + BONUS_PRE_STRAIGHT * cntStraight);
+    scoreLabel->setNum(score);
+
+    if(bombInfo.cnt == 6)
+        soundGood->play();
+    else if(bombInfo.cnt >= 7)
+        soundExcellent->play();
+    else if(cntStraight == 2)
+        soundGood->play();
+    else if(cntStraight == 3)
+        soundExcellent->play();
+    else if(cntStraight >= 4)
+        soundAwesome->play();
 
     for(int i = 0; i < 10; ++i)
         for(int j = 0; j < 10; ++j)
@@ -186,13 +213,17 @@ void GameWidget::act(Gem* gem){
     fall();
     QTimer::singleShot(200, this, [=](){
         fillBoard();
-        QTimer::singleShot(1000, this, [=](){
+        QTimer::singleShot(450, this, [=](){
             is_acting=false;
         });
     });
 }
 
 void GameWidget::fall(){
+    QTimer::singleShot(500, this, [=](){
+        soundFall->play();
+    });
+
     for(int i = 0; i < 10; ++i)
         for(int j = 9; j >= 0; --j){
             if(fallBoard[i][j] != -1 && fallBoard[i][j] != 0 && gemBoard[i][j] != 100){
@@ -207,7 +238,7 @@ void GameWidget::fall(){
 
 BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
     bool flag=true;
-    BombInfo bombInfo{true, 0}, tmp;
+    BombInfo bombInfo{1, true, 0}, tmp;
     toBomb.push_back(gem);
     int cntStraight=0;
 
@@ -216,11 +247,12 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
             flag=false;
     if(flag && dir!=Right && gem->x()>0 && gems[gem->x()-1][gem->y()]->type()==type){
         tmp = gemBomb(gems[gem->x()-1][gem->y()], type, Left);
+        bombInfo.cnt += tmp.cnt;
         if(dir != Left)
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
-        if(dir==Center && tmp.is_straight)
+        if(dir==Center && tmp.is_straight && tmp.cnt >= 2)
             cntStraight++;
     }
 
@@ -229,13 +261,13 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
         if(*_gem == gems[gem->x()+1][gem->y()])
             flag=false;
     if(flag && dir!=Left && gem->x()<9 && gems[gem->x()+1][gem->y()]->type()==type){
-
         tmp = gemBomb(gems[gem->x()+1][gem->y()], type, Right);
+        bombInfo.cnt += tmp.cnt;
         if(dir != Right)
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
-        if(dir==Center && tmp.is_straight)
+        if(dir==Center && tmp.is_straight && tmp.cnt >= 2)
             bombInfo.num_straight++;
     }
 
@@ -245,11 +277,12 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
             flag = false;
     if(flag && dir!=Up && gem->y()<9 && gems[gem->x()][gem->y()+1]->type() == type){
         tmp = gemBomb(gems[gem->x()][gem->y()+1], type, Down);
+        bombInfo.cnt += tmp.cnt;
         if(dir != Down)
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
-        if(dir==Center && tmp.is_straight)
+        if(dir==Center && tmp.is_straight && tmp.cnt >= 2)
             bombInfo.num_straight++;
     }
 
@@ -259,11 +292,12 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
             flag = false;
     if(flag && dir!=Down && gem->y()>0 && gems[gem->x()][gem->y()-1]->type() == type){
         tmp = gemBomb(gems[gem->x()][gem->y()-1], type, Up);
+        bombInfo.cnt += tmp.cnt;
         if(dir != Up)
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
-        if(dir==Center && tmp.is_straight)
+        if(dir==Center && tmp.is_straight && tmp.cnt >= 2)
             bombInfo.num_straight++;
     }
     return bombInfo;
@@ -290,7 +324,7 @@ void GameWidget::fallAnimation(Gem *gem, int h){
     });
 }
 
-void GameWidget::gemShack(Gem *gem){                //连续点击会有bug
+void GameWidget::gemShack(Gem *gem){
     QPropertyAnimation* animation = new QPropertyAnimation(gem, "geometry", this);
     animation->setDuration(300);
     animation->setStartValue(gem->geometry());
@@ -302,13 +336,6 @@ void GameWidget::gemShack(Gem *gem){                //连续点击会有bug
     QTimer::singleShot(1000, this, [=](){
         delete animation;
     });
-}
-
-bool GameWidget::event(QEvent *event){
-    if(is_acting && event->type() == QMouseEvent::KeyPress)
-        return true;
-    else
-        return QWidget::event(event);
 }
 
 void GameWidget::fillBoard(){
@@ -328,12 +355,38 @@ void GameWidget::fillBoard(){
         for(int j = 0; j < lack[i]; ++j){
             gems[i][lack[i]-j-1] = new Gem(randomGem(), len, i, lack[i]-j-1, boardWidget, -lack[i]);
             gemBoard[i][lack[i]-j-1] = gems[i][lack[i]-j-1]->type();
+            gems[i][lack[i]-j-1] -> installEventFilter(this);
             connect(gems[i][lack[i]-j-1], &Gem::mouseClicked, this, &GameWidget::act);
         }
+
+    QTimer::singleShot(500, this, [=](){
+        soundGenerate->play();
+    });
 
     for(int i = 0; i < 10; ++i)
         for(int j = 0; j < lack[i]; ++j){
             fallAnimation(gems[i][lack[i]-j-1], lack[i]);
-
         }
+}
+
+bool GameWidget::eventFilter(QObject *watched, QEvent *event){              //动画进行中禁用点击事件
+    if(watched->metaObject()->className() == QStringLiteral("Gem"))
+        if(is_acting && (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::MouseButtonDblClick))
+            return true;
+    return QMainWindow::eventFilter(watched, event);
+}
+
+void GameWidget::reset(){
+    for(int i = 0; i < 10; ++i)
+        for(int j = 0; j < 10; ++j)
+            gems[i][j]->bomb();
+    delete boardWidget;
+    initScene();
+    for(int i = 0; i < 10; ++i)
+        for(int j = 0; j < 10; ++j){
+            gemShack(gems[i][j]);
+        }
+
+    resetButton->setImage(":/pic/InGame/reset_disabled.png", ":/pic/InGame/reset_disabled.png", resetButton->width(), resetButton->height());
+    resetButton->setDisabled(true);
 }

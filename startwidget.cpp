@@ -95,8 +95,8 @@ void StartWidget::ShowButton(){
         });
     });
     connect(startButton, &MenuButton::clicked, [=](){
-        gameWidget->setGeometry(this->geometry());
         TransitionAnimation();
+        gameWidget->setGeometry(this->geometry());
         is_end = true;
         bgLoading->stop();
         bgMainmenu->stop();
