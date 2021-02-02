@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QTime>
 #include<QPropertyAnimation>
+#include <algorithm>
 
 GameWidget::GameWidget(QWidget *parent) :
     QMainWindow(parent),
@@ -17,6 +18,7 @@ GameWidget::GameWidget(QWidget *parent) :
     setWindowFlag(Qt::Window);  //设置为独立窗口
     setWindowTitle("Rockem Blocks");
     setFixedSize(1024,768);
+    setWindowIcon(QIcon(":/pic/Gem/Gold.png"));
     len = this->width()/100*6;
 
     //初始化场景、子控件及音效
@@ -123,7 +125,7 @@ void GameWidget::initWidgets(){
     progressBar->setStyleSheet("QProgressBar{color:grey;} QProgressBar::chunk{background-color:#24247e}");
 
     progressTimer = new QTimer(this);
-    progressTimer->setInterval(1800);
+    progressTimer->setInterval(100);
     connect(progressTimer, &QTimer::timeout, [=](){
         if(progressBar->value() == 99)
             end();
@@ -218,7 +220,7 @@ void GameWidget::act(Gem* gem){
     if(cntStraight >= 3 || (cntStraight == 2 && bombInfo.cnt >= 4))
         score += (BONUS_HAVE_STRAIGHT + BONUS_PRE_STRAIGHT * cntStraight);
     scoreLabel->setNum(score);
-    qDebug() << "num_straight: " << cntStraight;
+
     if(cntStraight == 2 && bombInfo.cnt >= 4)
         soundGood->play();
     else if(cntStraight == 3)
@@ -253,8 +255,12 @@ void GameWidget::act(Gem* gem){
         fillBoard();
         QTimer::singleShot(450, this, [=](){
             is_acting=false;
-            if(isFail())
-                end();
+            if(isFail()){
+                if(resetButton->isEnabled())
+                    reset();
+                else
+                    end();
+            }
         });
     });
 }
@@ -280,15 +286,16 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
     bool flag=true;
     BombInfo bombInfo{1, true, 0}, tmp;
     toBomb.push_back(gem);
-    int cntStraight=0;
+    int cntStraight=0, cntHand=0;
 
     for(auto _gem = toBomb.begin(); _gem!=toBomb.end(); ++_gem)                     //防止绕环
         if(*_gem == gems[gem->x()-1][gem->y()])
             flag=false;
     if(flag && dir!=Right && gem->x()>0 && gems[gem->x()-1][gem->y()]->type()==type){
+        cntHand++;
         tmp = gemBomb(gems[gem->x()-1][gem->y()], type, Left);
         bombInfo.cnt += tmp.cnt;
-        if(dir != Left)
+        if(dir != Left && dir!=Center)
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
@@ -301,14 +308,16 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
         if(*_gem == gems[gem->x()+1][gem->y()])
             flag=false;
     if(flag && dir!=Left && gem->x()<9 && gems[gem->x()+1][gem->y()]->type()==type){
+        cntHand++;
         tmp = gemBomb(gems[gem->x()+1][gem->y()], type, Right);
         bombInfo.cnt += tmp.cnt;
-        if(dir != Right)
+        if(dir != Right && dir!=Center)
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
         if(dir==Center && tmp.is_straight)
-            bombInfo.num_straight++;
+            cntStraight++;
+
     }
 
     flag = true;
@@ -316,14 +325,16 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
         if(*_gem == gems[gem->x()][gem->y()+1])
             flag = false;
     if(flag && dir!=Up && gem->y()<9 && gems[gem->x()][gem->y()+1]->type() == type){
+        cntHand++;
         tmp = gemBomb(gems[gem->x()][gem->y()+1], type, Down);
         bombInfo.cnt += tmp.cnt;
-        if(dir != Down)
+        if(dir != Down && dir!=Center)
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
         if(dir==Center && tmp.is_straight)
-            bombInfo.num_straight++;
+            cntStraight++;
+
     }
 
     flag = true;
@@ -331,15 +342,21 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
         if(*_gem == gems[gem->x()][gem->y()-1])
             flag = false;
     if(flag && dir!=Down && gem->y()>0 && gems[gem->x()][gem->y()-1]->type() == type){
+        cntHand++;
         tmp = gemBomb(gems[gem->x()][gem->y()-1], type, Up);
         bombInfo.cnt += tmp.cnt;
-        if(dir != Up)
+        if(dir != Up && dir!=Center)
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
         if(dir==Center && tmp.is_straight)
-            bombInfo.num_straight++;
+            cntStraight++;
+
     }
+    if(cntHand > cntStraight)
+        bombInfo.num_straight = 0;
+    else
+        bombInfo.num_straight = cntStraight;
     return bombInfo;
 }
 
@@ -363,10 +380,12 @@ void GameWidget::end(){
     settlementDialog->show();
 
     QFile recordFile(QApplication::applicationDirPath() + "/record");
-    recordFile.open(QIODevice::WriteOnly);
+    recordFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream in(&recordFile);
+    qDebug() <<"func end called" << userName << score;
     in << userName << " " << score << "\n";
     recordFile.close();
+    sort();
 }
 
 void GameWidget::fallAnimation(Gem *gem, int h){
@@ -476,11 +495,14 @@ void GameWidget::returnToStart(){
 }
 
 bool GameWidget::isFail(){
+    bool flag=true;
     bool result=true;
-    for(int i = 0; i < 10; ++i)
-        for(int j = 0; j < 10; ++j)
-            if(isEliminable(gems[i][j]))
+    for(int i = 0; i < 10 && flag; ++i)
+        for(int j = 0; j < 10 && flag; ++j)
+            if(isEliminable(gems[i][j])){
                 result=false;
+                flag=false;
+            }
     return result;
 
 }
@@ -496,4 +518,35 @@ bool GameWidget::isEliminable(Gem *gem){                    //只判断是否有
     if(gem->y()<9 && gems[gem->x()][gem->y()+1]->type() == gem->type())
         cnt++;
     return cnt>=3;
+}
+
+void GameWidget::sort(){
+    QFile recordFile(QApplication::applicationDirPath() + "/record");
+    recordFile.open(QIODevice::ReadOnly);
+    QTextStream file(&recordFile);
+    std::vector<NameScorePair> list;
+    NameScorePair pair;
+    QString userName;
+
+    list.clear();
+    file >> userName;
+    while (!file.atEnd()) {
+        file >> pair.name;
+        if(pair.name == QStringLiteral(""))
+            break;
+        file >> pair.score;
+        qDebug() << pair.name << pair.score;
+        list.push_back(pair);
+    }
+    recordFile.close();
+
+    std::sort(list.begin(), list.end(), [](NameScorePair p1, NameScorePair p2){return p1.score > p2.score;}); //降序排列
+
+    recordFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    file.setDevice(&recordFile);
+
+    file << userName + '\n';
+    for(NameScorePair p : list)
+        file << p.name << " " << p.score << '\n';
+    recordFile.close();
 }

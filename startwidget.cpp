@@ -21,6 +21,7 @@ StartWidget::StartWidget(QWidget *parent)
 
     setFixedSize(1024, 768);
     setWindowTitle("Rockem Blocks");
+    setWindowIcon(QIcon(":/pic/Gem/Gold.png"));
     gameWidget = new GameWidget(parent);
     bgLoading= new QMediaPlayer(this);
     bgMainmenu = new QMediaPlayer(this);
@@ -182,6 +183,7 @@ void StartWidget::InitWidget(){
     topRankLabel->setGeometry(recordLabel->x()+110, recordLabel->y()+110, 250, 30);
     topRankLabel->setAlignment(Qt::AlignCenter);
 
+    recordTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     recordTable->setColumnCount(2);
     recordTable->setRowCount(7);
     recordTable->setGeometry(recordLabel->x() + 50, recordLabel->y()+170, recordLabel->width()-100, 300);

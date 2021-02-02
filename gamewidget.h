@@ -15,6 +15,7 @@
 #include <QEvent>
 #include "settingwidget.h"
 #include "dialog.h"
+#include <vector>
 
 constexpr int SCORE_PER_GEM = 5;        //每颗宝石分数
 
@@ -27,6 +28,11 @@ struct BombInfo{
     int cnt;
     bool is_straight;
     int num_straight;
+};
+
+struct NameScorePair{
+    QString name;
+    int score;
 };
 
 enum Direction{Center, Left, Up, Down,  Right};
@@ -89,6 +95,7 @@ private:
     int randomGem();
     void badMove(Gem* gem);
     void gemShack(Gem* gem);
+    void sort();
 
     void showMenu();
     void returnToStart();
