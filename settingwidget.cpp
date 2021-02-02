@@ -27,17 +27,18 @@ SettingWidget::SettingWidget(int type, int curDifficulty, QWidget *parent) :
         ui->easyDifficulty->setDisabled(true);
         ui->defaultDifficulty->setDisabled(true);
         ui->hardDifficulty->setDisabled(true);
+
         switch(curDifficulty){
         case 1:
-            ui->easyDifficulty->setDisabled(false);
+            ui->easyDifficulty->setEnabled(true);
             ui->easyDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
             break;
         case 2:
-            ui->defaultDifficulty->setDisabled(false);
+            ui->defaultDifficulty->setEnabled(true);
             ui->defaultDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
             break;
         case 3:
-            ui->hardDifficulty->setDisabled(false);
+            ui->hardDifficulty->setEnabled(true);
             ui->hardDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
             break;
         }

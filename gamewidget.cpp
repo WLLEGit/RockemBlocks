@@ -131,7 +131,7 @@ void GameWidget::initWidgets(){
             progressBar->setValue(progressBar->value()+1);
     });
 
-    settingWidget = new SettingWidget(2, DIFFICULITY, this);
+    settingWidget = new SettingWidget(2, DIFFICULITY-3, this);
     settingWidget->button()->setSound(":/sound/button_mouseover.wav", ":/sound/button_mouseleave.wav", ":/sound/button_press.wav", ":/sound/button_release.wav");
     settingWidget->setGeometry(0,0,1024,768);
     settingWidget->hide();
