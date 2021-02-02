@@ -16,22 +16,28 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    dialog.cpp \
     gamewidget.cpp \
     gem.cpp \
     hoverbutton.cpp \
     main.cpp \
     menubutton.cpp \
+    settingwidget.cpp \
     startwidget.cpp
 
 HEADERS += \
+    dialog.h \
     gamewidget.h \
     gem.h \
     hoverbutton.h \
     menubutton.h \
+    settingwidget.h \
     startwidget.h
 
 FORMS += \
+    dialog.ui \
     gamewidget.ui \
+    settingwidget.ui \
     startwidget.ui
 
 TRANSLATIONS += \

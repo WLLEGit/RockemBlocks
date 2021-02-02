@@ -39,5 +39,15 @@
         <file>pic/Gem/violet.png</file>
         <file>pic/Gem/Blue.png</file>
         <file>pic/InGame/reset_disabled.png</file>
+        <file>pic/Record/dialog.png</file>
+        <file>pic/Record/light box.png</file>
+        <file>pic/Record/mask.png</file>
+        <file>pic/Record/rank plate.png</file>
+        <file>pic/Record/record_board.png</file>
+        <file>pic/Setting/button.png</file>
+        <file>pic/Setting/button_disabled.png</file>
+        <file>pic/Setting/button_hover.png</file>
+        <file>pic/Setting/headerless bkg.png</file>
+        <file>pic/Setting/dialog.png</file>
     </qresource>
 </RCC>

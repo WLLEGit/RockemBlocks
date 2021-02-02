@@ -24,8 +24,14 @@ GameWidget::GameWidget(QWidget *parent) :
     initWidgets();
     initScene();
     initSound();
+    settingWidget->raise();
 
     connect(resetButton, &QPushButton::clicked, this, &GameWidget::reset);
+    connect(menuButton, &QPushButton::clicked, [=](){
+        settingWidget->raise();
+        settingWidget->show();
+        progressTimer->stop();
+    });
 }
 
 
@@ -37,6 +43,7 @@ GameWidget::~GameWidget()
 
 void GameWidget::initBgm(){
     bgGame = new QMediaPlayer(this);
+    bgGame->setVolume(90);
     QFileInfo file("E:\\WinterCode2020\\Phase3\\RockemBlocks\\music\\Classic.mp3");
     Q_ASSERT(file.exists());
     bgGame->setMedia(QUrl::fromLocalFile("E:\\WinterCode2020\\Phase3\\RockemBlocks\\music\\Classic.mp3"));
@@ -86,7 +93,6 @@ void GameWidget::initWidgets(){
     menuButton = new HoverButton(this);
     resetButton = new HoverButton(this);
     scoreLabel = new QLabel("0", this);
-    //progressBar = new MyProgressbar(this->width()/20*7, this->height() - this->width()/100*6, this->width()/10*6, this->width()/100*6*7/10, this);
     progressBar = new QProgressBar(this);
     decorateLabel = new QLabel(this);
 
@@ -124,6 +130,23 @@ void GameWidget::initWidgets(){
         else
             progressBar->setValue(progressBar->value()+1);
     });
+
+    settingWidget = new SettingWidget(2, DIFFICULITY, this);
+    settingWidget->button()->setSound(":/sound/button_mouseover.wav", ":/sound/button_mouseleave.wav", ":/sound/button_press.wav", ":/sound/button_release.wav");
+    settingWidget->setGeometry(0,0,1024,768);
+    settingWidget->hide();
+    connect(settingWidget->mask(), &QPushButton::clicked, [=](){
+        settingWidget->hide();
+        progressTimer->start();
+    });
+    connect(settingWidget->button(), &HoverButton::clicked, this, &GameWidget::returnToStart);
+
+    settlementDialog = new Dialog(this);
+    settlementDialog->hide();
+    settlementDialog->setGeometry(0,0,1024,768);
+    settlementDialog->descriptionLabel()->setText("您的得分为");
+    settlementDialog->lineEdit()->setReadOnly(true);
+    connect(settlementDialog->button(), &HoverButton::clicked, this, &GameWidget::returnToStart);
 }
 
 void GameWidget::initSound(){
@@ -132,9 +155,12 @@ void GameWidget::initSound(){
     soundExcellent = new QSound(":/sound/voice_excellent.wav", this);
     soundAwesome = new QSound(":/sound/voice_awesome.wav", this);
     soundBadmove = new QSound(":/sound/badmove.wav", this);
-    soundAct = new QSound(":/sound/combo_2.wav");
-    soundFall = new QSound(":/sound/gem_hit.wav");
-    soundGenerate = new QSound(":/sound/gem_hit.wav");
+    soundAct = new QSound(":/sound/combo_2.wav", this);
+    soundFall = new QSound(":/sound/gem_hit.wav", this);
+    soundGenerate = new QSound(":/sound/gem_hit.wav", this);
+    soundUnbelievable = new QSound(":/sound/voice_unbelievable.wav", this);
+    soundTimeUp = new QSound(":/sound/voice_timeup.wav", this);
+    soundNoMoreMoves = new QSound(":/sound/voice_nomoremoves.wav", this);
 }
 
 int GameWidget::randomGem(){
@@ -156,6 +182,13 @@ void GameWidget::initScene(){
 }
 
 void GameWidget::start(){
+    settingWidget->hide();
+    settingWidget->raise();
+    settlementDialog->hide();
+    settlementDialog->raise();
+
+    resetButton->setImage(":/pic/InGame/reset.png", ":/pic/InGame/reset_hover.png", resetButton->width(), resetButton->height());
+    resetButton->setEnabled(true);
     progressBar->setValue(0);
     score = 0;
     soundGo->play();
@@ -182,20 +215,25 @@ void GameWidget::act(Gem* gem){
     soundAct->play();
 
     score += bombInfo.cnt * SCORE_PER_GEM;
-    if(cntStraight >= 2)
+    if(cntStraight >= 3 || (cntStraight == 2 && bombInfo.cnt >= 4))
         score += (BONUS_HAVE_STRAIGHT + BONUS_PRE_STRAIGHT * cntStraight);
     scoreLabel->setNum(score);
-
-    if(bombInfo.cnt == 6)
-        soundGood->play();
-    else if(bombInfo.cnt >= 7)
-        soundExcellent->play();
-    else if(cntStraight == 2)
+    qDebug() << "num_straight: " << cntStraight;
+    if(cntStraight == 2 && bombInfo.cnt >= 4)
         soundGood->play();
     else if(cntStraight == 3)
         soundExcellent->play();
     else if(cntStraight >= 4)
         soundAwesome->play();
+    else if(bombInfo.cnt == 6)
+        soundGood->play();
+    else if(bombInfo.cnt == 7)
+        soundExcellent->play();
+    else if(bombInfo.cnt == 8)
+        soundAwesome->play();
+    else if(bombInfo.cnt >= 9)
+        soundUnbelievable->play();
+
 
     for(int i = 0; i < 10; ++i)
         for(int j = 0; j < 10; ++j)
@@ -215,6 +253,8 @@ void GameWidget::act(Gem* gem){
         fillBoard();
         QTimer::singleShot(450, this, [=](){
             is_acting=false;
+            if(isFail())
+                end();
         });
     });
 }
@@ -252,7 +292,7 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
-        if(dir==Center && tmp.is_straight && tmp.cnt >= 2)
+        if(dir==Center && tmp.is_straight)
             cntStraight++;
     }
 
@@ -267,7 +307,7 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
-        if(dir==Center && tmp.is_straight && tmp.cnt >= 2)
+        if(dir==Center && tmp.is_straight)
             bombInfo.num_straight++;
     }
 
@@ -282,7 +322,7 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
-        if(dir==Center && tmp.is_straight && tmp.cnt >= 2)
+        if(dir==Center && tmp.is_straight)
             bombInfo.num_straight++;
     }
 
@@ -297,7 +337,7 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
             bombInfo.is_straight = false;
         else if(!tmp.is_straight)
             bombInfo.is_straight = false;
-        if(dir==Center && tmp.is_straight && tmp.cnt >= 2)
+        if(dir==Center && tmp.is_straight)
             bombInfo.num_straight++;
     }
     return bombInfo;
@@ -309,7 +349,24 @@ void GameWidget::badMove(Gem *gem){
 }
 
 void GameWidget::end(){
+    progressTimer->stop();
+    if(progressBar->value() == 99){
+        settlementDialog->title()->setText("时间到");
+        soundTimeUp->play();
+    }
+    else{
+        settlementDialog->title()->setText("无法消去了");
+        soundNoMoreMoves->play();
+    }
 
+    settlementDialog->lineEdit()->setText(QString::number(score));
+    settlementDialog->show();
+
+    QFile recordFile(QApplication::applicationDirPath() + "/record");
+    recordFile.open(QIODevice::WriteOnly);
+    QTextStream in(&recordFile);
+    in << userName << " " << score << "\n";
+    recordFile.close();
 }
 
 void GameWidget::fallAnimation(Gem *gem, int h){
@@ -389,4 +446,54 @@ void GameWidget::reset(){
 
     resetButton->setImage(":/pic/InGame/reset_disabled.png", ":/pic/InGame/reset_disabled.png", resetButton->width(), resetButton->height());
     resetButton->setDisabled(true);
+}
+
+void GameWidget::setDifficulity(int d){
+    switch (d) {
+    case 1:
+        DIFFICULITY = 4;
+        break;
+    case 2:
+        DIFFICULITY = 5;
+        break;
+    case 3:
+        DIFFICULITY = 6;
+        break;
+    }
+}
+
+void GameWidget::returnToStart(){
+    settlementDialog->hide();
+    emit returnToMenu();
+    QTimer::singleShot(500, this, [=](){
+        for(int i = 0; i < 10; ++i)
+            for(int j = 0; j < 10; ++j)
+                gems[i][j]->bomb();
+        delete boardWidget;
+        initScene();
+        this->hide();
+    });
+}
+
+bool GameWidget::isFail(){
+    bool result=true;
+    for(int i = 0; i < 10; ++i)
+        for(int j = 0; j < 10; ++j)
+            if(isEliminable(gems[i][j]))
+                result=false;
+    return result;
+
+}
+
+bool GameWidget::isEliminable(Gem *gem){                    //只判断是否有三个相邻，不记录具体个数
+    int cnt=1;
+    if(gem->x()>0 && gems[gem->x()-1][gem->y()]->type() == gem->type())
+        cnt++;
+    if(gem->x()<9 && gems[gem->x()+1][gem->y()]->type() == gem->type())
+        cnt++;
+    if(gem->y()>0 && gems[gem->x()][gem->y()-1]->type() == gem->type())
+        cnt++;
+    if(gem->y()<9 && gems[gem->x()][gem->y()+1]->type() == gem->type())
+        cnt++;
+    return cnt>=3;
 }

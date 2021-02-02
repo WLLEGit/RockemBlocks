@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingWidget</class>
+ <widget class="QWidget" name="SettingWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="backgroundLabel">
+   <property name="geometry">
+    <rect>
+     <x>312</x>
+     <y>184</y>
+     <width>400</width>
+     <height>401</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="pic.qrc">:/pic/Setting/headerless bkg.png</pixmap>
+   </property>
+  </widget>
+  <widget class="QLabel" name="difficultyLabel">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>290</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>微软雅黑</family>
+     <pointsize>10</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>当前难度：</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>320</y>
+     <width>251</width>
+     <height>46</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="HoverButton" name="easyDifficulty">
+      <property name="font">
+       <font>
+        <family>微软雅黑</family>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="HoverButton" name="defaultDifficulty">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="HoverButton" name="hardDifficulty">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="HoverButton" name="button">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>450</y>
+     <width>251</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="mask">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>768</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <zorder>mask</zorder>
+  <zorder>backgroundLabel</zorder>
+  <zorder>difficultyLabel</zorder>
+  <zorder>widget</zorder>
+  <zorder>button</zorder>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HoverButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">hoverbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="pic.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -13,9 +13,11 @@
 #include <QSound>
 #include <vector>
 #include <QEvent>
+#include "settingwidget.h"
+#include "dialog.h"
 
 constexpr int SCORE_PER_GEM = 5;        //每颗宝石分数
-constexpr int DIFFICULITY = 5;          //宝石种类数
+
 constexpr int RECT_BONUS = 5;           //田字形加分
 constexpr int BONUS_HAVE_STRAIGHT = 5;  //有直边基础加分
 constexpr int BONUS_PRE_STRAIGHT = 5;   //每一条直边加分（L型，T型，十字形）
@@ -40,15 +42,20 @@ class GameWidget : public QMainWindow
 public:
     explicit GameWidget(QWidget *parent = nullptr);
     ~GameWidget();
+    SettingWidget* settingWidget;
+    Dialog* settlementDialog;
     //背景音乐
     QMediaPlayer* bgGame;
-    bool is_end= false;
+        QString userName="";
+    bool is_end= false;             //背景音乐循环是否停止
     void start();
+    void setDifficulity(int d);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
+    int DIFFICULITY = 5;          //宝石种类数
     Ui::GameWidget *ui;
     HoverButton* menuButton, *resetButton;
     QLabel* scoreLabel, *decorateLabel;
@@ -60,16 +67,19 @@ private:
     unsigned int gemBoard[10][10];          //第一个值为x，第二个值为y
     int fallBoard[10][10];
     Gem* gems[10][10];
-    QSound* soundGo, *soundGood, *soundExcellent, *soundAwesome, *soundBadmove, *soundAct, *soundFall, *soundGenerate;
+    QSound* soundGo, *soundGood, *soundExcellent, *soundAwesome, *soundBadmove, *soundAct, *soundFall, *soundGenerate, *soundUnbelievable, *soundTimeUp, *soundNoMoreMoves;
     bool is_acting=false;
     std::vector<Gem*> toBomb;
+
+
 
     void initBgm();
     void paintEvent(QPaintEvent *event) override;
     void initWidgets();
     void initScene();
     void initSound();
-    bool is_lose();
+    bool isFail();
+    bool isEliminable(Gem* gem);
     void act(Gem* gem);
     BombInfo gemBomb(Gem* gem, int type, Direction dir=Center);
     void fallAnimation(Gem* target, int h);
@@ -81,7 +91,11 @@ private:
     void gemShack(Gem* gem);
 
     void showMenu();
+    void returnToStart();
     void reset();
+
+signals:
+    void returnToMenu();
 
 };
 

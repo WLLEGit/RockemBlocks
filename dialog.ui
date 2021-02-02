@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QWidget" name="widget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>280</y>
+     <width>411</width>
+     <height>231</height>
+    </rect>
+   </property>
+   <widget class="HoverButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>139</x>
+      <y>165</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="descriptionLabel">
+    <property name="geometry">
+     <rect>
+      <x>79</x>
+      <y>75</y>
+      <width>251</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>-1</x>
+      <y>5</y>
+      <width>400</width>
+      <height>221</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="pic.qrc">:/pic/Setting/dialog.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>79</x>
+      <y>115</y>
+      <width>251</width>
+      <height>35</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>ArrowCursor</cursorShape>
+    </property>
+    <property name="maxLength">
+     <number>10</number>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="titleLabel">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>20</y>
+      <width>161</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <zorder>label</zorder>
+   <zorder>pushButton</zorder>
+   <zorder>lineEdit</zorder>
+   <zorder>titleLabel</zorder>
+   <zorder>descriptionLabel</zorder>
+  </widget>
+  <widget class="QPushButton" name="mask">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>768</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
+  <zorder>mask</zorder>
+  <zorder>widget</zorder>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>HoverButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">hoverbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="pic.qrc"/>
+ </resources>
+ <connections/>
+</ui>

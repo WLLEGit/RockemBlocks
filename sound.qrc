@@ -27,5 +27,8 @@
         <file>sound/zen_menuexpand.wav</file>
         <file>sound/zen_menuopen.wav</file>
         <file>sound/zen_menushrink.wav</file>
+        <file>sound/voice_nomoremoves.wav</file>
+        <file>sound/voice_timeup.wav</file>
+        <file>sound/voice_unbelievable.wav</file>
     </qresource>
 </RCC>
