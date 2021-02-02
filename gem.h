@@ -5,6 +5,8 @@
 #include <QMap>
 #include <QPushButton>
 #include <QPixmap>
+#include <QMovie>
+#include <QLabel>
 
 class Gem : public QPushButton
 {
@@ -23,7 +25,9 @@ private:
     void initGemPath();
     int _type;
     int _x, _y;
-    QWidget* parent;
+
+    QMovie* gif;
+    QLabel* gifLabel;
 
 signals:
     void mouseClicked(Gem*);

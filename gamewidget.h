@@ -18,7 +18,6 @@
 #include <vector>
 
 constexpr int SCORE_PER_GEM = 5;        //每颗宝石分数
-
 constexpr int RECT_BONUS = 5;           //田字形加分
 constexpr int BONUS_HAVE_STRAIGHT = 5;  //有直边基础加分
 constexpr int BONUS_PRE_STRAIGHT = 5;   //每一条直边加分（L型，T型，十字形）
@@ -73,7 +72,8 @@ private:
     unsigned int gemBoard[10][10];          //第一个值为x，第二个值为y
     int fallBoard[10][10];
     Gem* gems[10][10];
-    QSound* soundGo, *soundGood, *soundExcellent, *soundAwesome, *soundBadmove, *soundAct, *soundFall, *soundGenerate, *soundUnbelievable, *soundTimeUp, *soundNoMoreMoves;
+    QSound* soundGo, *soundGood, *soundExcellent, *soundAwesome, *soundBadmove, *soundAct, *soundFall, *soundGenerate,\
+                                    *soundUnbelievable, *soundTimeUp, *soundNoMoreMoves, *soundMagic;
     bool is_acting=false;
     std::vector<Gem*> toBomb;
 
@@ -88,6 +88,7 @@ private:
     bool isEliminable(Gem* gem);
     void act(Gem* gem);
     BombInfo gemBomb(Gem* gem, int type, Direction dir=Center);
+    BombInfo magicBomb(Gem* gem);
     void fallAnimation(Gem* target, int h);
     void fall();
     void fillBoard();

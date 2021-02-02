@@ -125,7 +125,7 @@ void GameWidget::initWidgets(){
     progressBar->setStyleSheet("QProgressBar{color:grey;} QProgressBar::chunk{background-color:#24247e}");
 
     progressTimer = new QTimer(this);
-    progressTimer->setInterval(100);
+    progressTimer->setInterval(1800);
     connect(progressTimer, &QTimer::timeout, [=](){
         if(progressBar->value() == 99)
             end();
@@ -163,9 +163,12 @@ void GameWidget::initSound(){
     soundUnbelievable = new QSound(":/sound/voice_unbelievable.wav", this);
     soundTimeUp = new QSound(":/sound/voice_timeup.wav", this);
     soundNoMoreMoves = new QSound(":/sound/voice_nomoremoves.wav", this);
+    soundMagic = new QSound(":/sound/gem_shatters.wav", this);
 }
 
 int GameWidget::randomGem(){
+    if(QRandomGenerator::global()->bounded(0, 70) == 1)        //Magic方块1/40生成概率
+        return 0;
     return QRandomGenerator::global()->bounded(1, DIFFICULITY+1);
 }
 
@@ -201,7 +204,8 @@ void GameWidget::act(Gem* gem){
     is_acting = true;
 
     toBomb.clear();
-    BombInfo bombInfo=gemBomb(gem, gem->type());
+    BombInfo bombInfo;
+    bombInfo= (gem->type() != 0 ? gemBomb(gem, gem->type()) : magicBomb(gem));
     int cntStraight = bombInfo.num_straight;
 
     Q_ASSERT(bombInfo.cnt == (int)toBomb.size());
@@ -357,6 +361,27 @@ BombInfo GameWidget::gemBomb(Gem* gem, int type, Direction dir){
         bombInfo.num_straight = 0;
     else
         bombInfo.num_straight = cntStraight;
+    return bombInfo;
+}
+
+
+BombInfo GameWidget::magicBomb(Gem *gem){
+    soundMagic->play();
+    BombInfo bombInfo{1, true, 0};
+    int type;
+
+    toBomb.push_back(gem);
+    if(gem->y()!=0)
+        type=gems[gem->x()][gem->y()-1]->type();
+    else
+        type=gems[gem->x()][gem->y()+1]->type();
+
+    for(int i = 0; i < 10; ++i)
+        for(int j = 0; j < 10; ++j)
+            if(gems[i][j]->type() == type){
+                toBomb.push_back(gems[i][j]);
+                bombInfo.cnt++;
+            }
     return bombInfo;
 }
 
