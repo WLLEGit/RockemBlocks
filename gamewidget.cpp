@@ -411,9 +411,9 @@ void GameWidget::end(){
 
     QFile recordFile(QApplication::applicationDirPath() + "/record");
     recordFile.open(QIODevice::WriteOnly | QIODevice::Append);
-    QTextStream in(&recordFile);
-    in.setCodec("utf-8");
-    in << userName << " " << score << "\n";
+    QTextStream out(&recordFile);
+    out.setCodec("utf-8");
+    out << userName << " " << score << "\n";
     recordFile.close();
     sort();
 }
@@ -581,6 +581,7 @@ void GameWidget::sort(){
 
     recordFile.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.setDevice(&recordFile);
+    file.setCodec("utf-8");
 
     file << userName + '\n';
     for(NameScorePair p : list)

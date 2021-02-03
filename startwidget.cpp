@@ -310,9 +310,10 @@ void StartWidget::SetUser(){
         recordFile.setFileName(QApplication::applicationDirPath() + "/record");
         recordFile.open(QIODevice::Truncate | QIODevice::WriteOnly);
         text.setDevice(&recordFile);
+        text.setCodec("utf-8");
         text << gameWidget->userName + '\n';
         for(QString line : list)
-            text << line;
+            text << line << '\n';
         recordFile.close();
     }
     else{
