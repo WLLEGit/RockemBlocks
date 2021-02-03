@@ -125,7 +125,7 @@ void GameWidget::initWidgets(){
     progressBar->setStyleSheet("QProgressBar{color:grey;} QProgressBar::chunk{background-color:#24247e}");
 
     progressTimer = new QTimer(this);
-    progressTimer->setInterval(100);
+    progressTimer->setInterval(1800);
     connect(progressTimer, &QTimer::timeout, [=](){
         if(progressBar->value() == 99)
             end();
