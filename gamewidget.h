@@ -91,9 +91,9 @@ private:
     BombInfo magicBomb(Gem* gem);
     void fallAnimation(Gem* target, int h);
     void fall();
-    void fillBoard();
+    void fillBoard(bool allowMagic=true);
     void end();
-    int randomGem();
+    int randomGem(bool allowMagic=true);
     void badMove(Gem* gem);
     void gemShack(Gem* gem);
     void sort();

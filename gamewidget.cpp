@@ -166,8 +166,8 @@ void GameWidget::initSound(){
     soundMagic = new QSound(":/sound/gem_shatters.wav", this);
 }
 
-int GameWidget::randomGem(){
-    if(QRandomGenerator::global()->bounded(0, 70) == 1)        //Magic方块1/40生成概率
+int GameWidget::randomGem(bool allowMagic){
+    if(allowMagic && QRandomGenerator::global()->bounded(0, 85) == 1)        //Magic方块1/85生成概率
         return 0;
     return QRandomGenerator::global()->bounded(1, DIFFICULITY+1);
 }
@@ -196,19 +196,23 @@ void GameWidget::start(){
     resetButton->setEnabled(true);
     progressBar->setValue(0);
     score = 0;
+    scoreLabel->setNum(score);
+    progressBar->setValue(0);
     soundGo->play();
     progressTimer->start();
 }
 
 void GameWidget::act(Gem* gem){
     is_acting = true;
-
+    bool allowMagic = (gem->type()!=0);
     toBomb.clear();
     BombInfo bombInfo;
     bombInfo= (gem->type() != 0 ? gemBomb(gem, gem->type()) : magicBomb(gem));
     int cntStraight = bombInfo.num_straight;
 
     Q_ASSERT(bombInfo.cnt == (int)toBomb.size());
+    if(gem->type()==0 && bombInfo.cnt < 3)
+        bombInfo.cnt = 3;
     if(bombInfo.cnt < 3){
         QTimer::singleShot(290, this, [=](){
             is_acting=false;
@@ -256,7 +260,7 @@ void GameWidget::act(Gem* gem){
         gem->bomb();
     fall();
     QTimer::singleShot(200, this, [=](){
-        fillBoard();
+        fillBoard(allowMagic);
         QTimer::singleShot(450, this, [=](){
             is_acting=false;
             if(isFail()){
@@ -378,7 +382,7 @@ BombInfo GameWidget::magicBomb(Gem *gem){
 
     for(int i = 0; i < 10; ++i)
         for(int j = 0; j < 10; ++j)
-            if(gems[i][j]->type() == type){
+            if(gems[i][j]->type() == type && gems[i][j] != gem){
                 toBomb.push_back(gems[i][j]);
                 bombInfo.cnt++;
             }
@@ -402,12 +406,12 @@ void GameWidget::end(){
     }
 
     settlementDialog->lineEdit()->setText(QString::number(score));
+    settlementDialog->raise();
     settlementDialog->show();
 
     QFile recordFile(QApplication::applicationDirPath() + "/record");
     recordFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream in(&recordFile);
-    qDebug() <<"func end called" << userName << score;
     in << userName << " " << score << "\n";
     recordFile.close();
     sort();
@@ -439,7 +443,7 @@ void GameWidget::gemShack(Gem *gem){
     });
 }
 
-void GameWidget::fillBoard(){
+void GameWidget::fillBoard(bool allowMagic){
     int lack[10] = {0};
 
     for(int i = 0; i < 10; ++i){
@@ -454,7 +458,7 @@ void GameWidget::fillBoard(){
 
     for(int i = 0; i < 10; ++i)
         for(int j = 0; j < lack[i]; ++j){
-            gems[i][lack[i]-j-1] = new Gem(randomGem(), len, i, lack[i]-j-1, boardWidget, -lack[i]);
+            gems[i][lack[i]-j-1] = new Gem(randomGem(allowMagic), len, i, lack[i]-j-1, boardWidget, -lack[i]);
             gemBoard[i][lack[i]-j-1] = gems[i][lack[i]-j-1]->type();
             gems[i][lack[i]-j-1] -> installEventFilter(this);
             connect(gems[i][lack[i]-j-1], &Gem::mouseClicked, this, &GameWidget::act);
@@ -504,10 +508,17 @@ void GameWidget::setDifficulity(int d){
         DIFFICULITY = 6;
         break;
     }
+
+    settingWidget->setDifficulity(DIFFICULITY-3);
+
+    reset();
+    resetButton->setImage(":/pic/InGame/reset.png", ":/pic/InGame/reset_hover.png", resetButton->width(), resetButton->height());
+    resetButton->setEnabled(true);
 }
 
 void GameWidget::returnToStart(){
     settlementDialog->hide();
+    settingWidget->hide();
     emit returnToMenu();
     QTimer::singleShot(500, this, [=](){
         for(int i = 0; i < 10; ++i)
@@ -560,7 +571,6 @@ void GameWidget::sort(){
         if(pair.name == QStringLiteral(""))
             break;
         file >> pair.score;
-        qDebug() << pair.name << pair.score;
         list.push_back(pair);
     }
     recordFile.close();

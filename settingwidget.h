@@ -21,6 +21,7 @@ public:
     HoverButton* easyButton();
     HoverButton* defaultButton();
     HoverButton* hardButton();
+    void setDifficulity(int curDifficulty);
 
 private:
     Ui::SettingWidget *ui;

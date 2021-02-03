@@ -12,36 +12,13 @@ SettingWidget::SettingWidget(int type, int curDifficulty, QWidget *parent) :
     ui->mask->setStyleSheet("QPushButton{border-image:url(:/pic/Record/mask.png);}");
     ui->button->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", ui->button->width(), ui->button->height());
 
-    int w = 73, h = 27;
     if(type == 1){
         ui->difficultyLabel->setText("选择难度:");
         switchToDifficulty(curDifficulty);
         ui->button->setLabel("退出游戏");
     }
     else if(type == 2){
-        ui->difficultyLabel->setText("当前难度:");
-        ui->easyDifficulty->setImage(":/pic/Setting/button_disabled.png", ":/pic/Setting/button_disabled.png", w, h);
-        ui->defaultDifficulty->setImage(":/pic/Setting/button_disabled.png", ":/pic/Setting/button_disabled.png", w, h);
-        ui->hardDifficulty->setImage(":/pic/Setting/button_disabled.png", ":/pic/Setting/button_disabled.png", w, h);
-        ui->button->setLabel("返回主菜单");
-        ui->easyDifficulty->setDisabled(true);
-        ui->defaultDifficulty->setDisabled(true);
-        ui->hardDifficulty->setDisabled(true);
-
-        switch(curDifficulty){
-        case 1:
-            ui->easyDifficulty->setEnabled(true);
-            ui->easyDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
-            break;
-        case 2:
-            ui->defaultDifficulty->setEnabled(true);
-            ui->defaultDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
-            break;
-        case 3:
-            ui->hardDifficulty->setEnabled(true);
-            ui->hardDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
-            break;
-        }
+        setDifficulity(curDifficulty);
     }
     ui->easyDifficulty->setLabel("简单");             //label应在image后设置
     ui->defaultDifficulty->setLabel("默认");
@@ -96,4 +73,31 @@ HoverButton* SettingWidget::defaultButton(){
 
 HoverButton* SettingWidget::hardButton(){
     return ui->hardDifficulty;
+}
+
+void SettingWidget::setDifficulity(int curDifficulty){
+    int w = 73, h = 27;
+    ui->difficultyLabel->setText("当前难度:");
+    ui->easyDifficulty->setImage(":/pic/Setting/button_disabled.png", ":/pic/Setting/button_disabled.png", w, h);
+    ui->defaultDifficulty->setImage(":/pic/Setting/button_disabled.png", ":/pic/Setting/button_disabled.png", w, h);
+    ui->hardDifficulty->setImage(":/pic/Setting/button_disabled.png", ":/pic/Setting/button_disabled.png", w, h);
+    ui->button->setLabel("返回主菜单");
+    ui->easyDifficulty->setDisabled(true);
+    ui->defaultDifficulty->setDisabled(true);
+    ui->hardDifficulty->setDisabled(true);
+
+    switch(curDifficulty){
+    case 1:
+        ui->easyDifficulty->setEnabled(true);
+        ui->easyDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
+        break;
+    case 2:
+        ui->defaultDifficulty->setEnabled(true);
+        ui->defaultDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
+        break;
+    case 3:
+        ui->hardDifficulty->setEnabled(true);
+        ui->hardDifficulty->setImage(":/pic/Setting/button.png", ":/pic/Setting/button_hover.png", w, h);
+        break;
+    }
 }

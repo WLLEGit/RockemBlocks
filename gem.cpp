@@ -1,4 +1,5 @@
 #include "gem.h"
+#include <QDebug>
 
 Gem::Gem(int type, int len, int x, int y, QWidget *parent, int offset) : QPushButton(parent), _type(type), _x(x), _y(y)
 {
@@ -26,6 +27,7 @@ Gem::Gem(int type, int len, int x, int y, QWidget *parent, int offset) : QPushBu
         this->mouseClicked(this);
     });
 }
+
 
 void Gem::initGemPath(){
     gemPath[0] = ":/pic/Gem/Magic.gif";
