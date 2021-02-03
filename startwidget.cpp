@@ -223,10 +223,10 @@ void StartWidget::InitWidget(){
 
 void StartWidget::ShowRecordBoard(){
     QFile recordFile(QApplication::applicationDirPath() + "/record");
-    QTextStream in(&recordFile);
-    in.setCodec("uft-8");
-    QString word;
     recordFile.open(QIODevice::ReadOnly);
+    QTextStream in(&recordFile);
+    in.setCodec("utf-8");
+    QString word;
 
     in >> word;
     for(int i = 0; i < 7 && !in.atEnd(); ++i){
@@ -299,6 +299,7 @@ void StartWidget::SetUser(){
     if(recordFile.exists()){
         recordFile.open(QIODevice::ReadOnly);
         QTextStream text(&recordFile);
+        text.setCodec("utf-8");
         QString firstLine;
         QStringList list;
         firstLine = text.readLine();
@@ -317,6 +318,7 @@ void StartWidget::SetUser(){
     else{
         recordFile.open(QIODevice::WriteOnly);
         QTextStream text(&recordFile);
+        text.setCodec("utf-8");
         text << gameWidget->userName + '\n';
         recordFile.close();
     }

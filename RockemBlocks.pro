@@ -52,3 +52,5 @@ RESOURCES += \
     music.qrc \
     pic.qrc \
     sound.qrc
+
+RC_FILE += icon.rc

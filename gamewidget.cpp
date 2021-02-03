@@ -125,7 +125,7 @@ void GameWidget::initWidgets(){
     progressBar->setStyleSheet("QProgressBar{color:grey;} QProgressBar::chunk{background-color:#24247e}");
 
     progressTimer = new QTimer(this);
-    progressTimer->setInterval(1800);
+    progressTimer->setInterval(100);
     connect(progressTimer, &QTimer::timeout, [=](){
         if(progressBar->value() == 99)
             end();
@@ -412,6 +412,7 @@ void GameWidget::end(){
     QFile recordFile(QApplication::applicationDirPath() + "/record");
     recordFile.open(QIODevice::WriteOnly | QIODevice::Append);
     QTextStream in(&recordFile);
+    in.setCodec("utf-8");
     in << userName << " " << score << "\n";
     recordFile.close();
     sort();
@@ -560,6 +561,7 @@ void GameWidget::sort(){
     QFile recordFile(QApplication::applicationDirPath() + "/record");
     recordFile.open(QIODevice::ReadOnly);
     QTextStream file(&recordFile);
+    file.setCodec("utf-8");
     std::vector<NameScorePair> list;
     NameScorePair pair;
     QString userName;
