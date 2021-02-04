@@ -46,9 +46,10 @@ GameWidget::~GameWidget()
 void GameWidget::initBgm(){
     bgGame = new QMediaPlayer(this);
     bgGame->setVolume(90);
-    QFileInfo file("E:\\WinterCode2020\\Phase3\\RockemBlocks\\music\\Classic.mp3");
+    //使用前务必修改为对应路径
+    QFileInfo file(QApplication::applicationDirPath() + "/music/Classic.mp3");
     Q_ASSERT(file.exists());
-    bgGame->setMedia(QUrl::fromLocalFile("E:\\WinterCode2020\\Phase3\\RockemBlocks\\music\\Classic.mp3"));
+    bgGame->setMedia(QUrl::fromLocalFile(QApplication::applicationDirPath() + "/music/Classic.mp3"));
     connect(bgGame, &QMediaPlayer::mediaStatusChanged, [=](QMediaPlayer::MediaStatus status){
         if(status == QMediaPlayer::EndOfMedia && !is_end)
             bgGame->play();

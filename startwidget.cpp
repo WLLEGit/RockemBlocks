@@ -27,10 +27,10 @@ StartWidget::StartWidget(QWidget *parent)
     bgMainmenu = new QMediaPlayer(this);
     InitWidget();
 
-    // 大文件不好放入资源文件中，只能使用绝对路径，编译前务必修改
-    Q_ASSERT(QFileInfo("E:\\WinterCode2020\\Phase3\\RockemBlocks\\music\\Loading.mp3").exists());
-    bgLoading->setMedia(QUrl::fromLocalFile("E:\\WinterCode2020\\Phase3\\RockemBlocks\\music\\Loading.mp3"));
-    bgMainmenu->setMedia(QUrl::fromLocalFile("E:\\WinterCode2020\\Phase3\\RockemBlocks\\music\\mainmenu.mp3"));
+    // 大文件不好放入资源文件中，只能使用相对路径，编译前务必修改
+    Q_ASSERT(QFileInfo(QApplication::applicationDirPath() + "/music/Loading.mp3").exists());
+    bgLoading->setMedia(QUrl::fromLocalFile(QApplication::applicationDirPath() + "./music/Loading.mp3"));
+    bgMainmenu->setMedia(QUrl::fromLocalFile(QApplication::applicationDirPath() + "./music/Mainmenu.mp3"));
 
     connect(bgLoading, &QMediaPlayer::mediaStatusChanged, [=](QMediaPlayer::MediaStatus status){
         if(status == QMediaPlayer::EndOfMedia)
